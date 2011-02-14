@@ -2,24 +2,10 @@
 html
   head
     title player
-    script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"
+    script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"
+    script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"
+    link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css"
+    link rel="stylesheet" href="/jquery-ui-1.8.9.custom.css" type="text/css"
     script src="player.js"
   body
-    p
-      | Player goes here!
-
-    p
-      | Commands: 
-      a href="http://www.musicpd.org/doc/protocol/ch02.html" http://www.musicpd.org/doc/protocol
-
-    pre 
-      |
-
-        JavaScript:
-          mpd.search('artist', 'tyskarna');
-          mpd.pause();
-          mpd.play();
-          mpd.currentsong(function(a) { alert(a[0]['Title']) });
-        
-        CoffeeScript:
-          mpd.currentsong (a) -> alert a[0]['Title']
+    #progress
