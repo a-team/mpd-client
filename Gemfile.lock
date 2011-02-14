@@ -15,8 +15,10 @@ GEM
       haml (>= 3.0.4)
     daemons (1.1.0)
     eventmachine (0.12.10)
+    eventmachine (0.12.10-java)
     haml (3.0.25)
     json (1.4.6)
+    json (1.4.6-java)
     rack (1.2.1)
     slim (0.9.0)
       temple (~> 0.1.7)
@@ -29,6 +31,7 @@ GEM
     tilt (1.2.2)
 
 PLATFORMS
+  java
   ruby
 
 DEPENDENCIES
