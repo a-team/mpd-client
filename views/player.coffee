@@ -35,21 +35,32 @@ updateStatus = ->
     progress = $('#progress')
     if s[0]['songid'] == currentSong
       value = 1000 * parseInt s[0]['time']
-      progress.slider 'option', 'value', value
-      progress.css seek: 0
-      progress.animate seek: 1000, {duration: 1000, easing: "linear", step: (d) -> progress.slider 'value', value+d }
+      console.log value
+      progress.stop true, false
+      if updateStatus.previous != value || !updateStatus.suspectingPause
+        updateStatus.previous = value
+        if updateStatus.suspectingPause
+          value++
+        updateStatus.suspectingPause = false
+        progress.css seek: 0
+        progress.animate seek: 2000,
+          {duration: 2000, easing: "linear",
+          step: (d) -> progress.slider 'value', value+d }
+      else
+        updateStatus.suspectingPause = true
+        progress.slider 'value', value
 
     else
       mpd.currentsong (s) ->
         if s[0]
           progress.slider 'option', 'max', 1000 * parseInt(s[0]['time'])
-          old = $('#pl_' + currentSong)
-          old.removeClass 'currentSong'
-          old.addClass 'ui-priority-secondary'
+          oldValue = $('#pl_' + currentSong)
+          oldValue.removeClass 'currentSong'
+          oldValue.addClass 'ui-priority-secondary'
           window.currentSong = s[0]['id']
-          new = $('#pl_' + s[0]['id'])
-          new.addClass 'currentSong'
-          new.removeClass 'ui-priority-secondary'
+          newValue = $('#pl_' + s[0]['id'])
+          newValue.addClass 'currentSong'
+          newValue.removeClass 'ui-priority-secondary'
           updateStatus()
 
 generateList = (list, songs) ->
@@ -60,7 +71,10 @@ generateList = (list, songs) ->
   list
 
 seek = (event) ->
+  $('#progress').stop true, false
+  console.log event
   mpd.seekid currentSong, Math.floor $('#progress').slider('option', 'value') / 1000
+  updateStatus()
 
 $ ->
   mpd 'commands', (commands) ->
