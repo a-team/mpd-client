@@ -34,6 +34,7 @@ class App < Sinatra::Base
   end
 
   get '/:cmd' do
+    pass if params[:cmd] == 'favicon'
     settings.exec params[:cmd]
   end
 
