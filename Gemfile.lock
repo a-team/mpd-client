@@ -7,14 +7,16 @@ GIT
       tilt (>= 1.2.2, < 2.0)
 
 GEM
-  remote: http://rubygems.org/
   specs:
     coffee-script (2.1.2)
       coffee-script-source
     coffee-script-source (1.0.1)
+    compass (0.10.6)
+      haml (>= 3.0.4)
     daemons (1.1.0)
     eventmachine (0.12.10)
     eventmachine (0.12.10-java)
+    haml (3.0.25)
     json (1.4.6)
     json (1.4.6-java)
     rack (1.2.1)
@@ -34,6 +36,7 @@ PLATFORMS
 
 DEPENDENCIES
   coffee-script
+  compass
   json
   sinatra!
   slim
