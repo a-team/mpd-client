@@ -70,6 +70,8 @@ class App < Sinatra::Base
     line = mpd.gets
     puts "MPD >>> #{line}"
     if line.start_with? "ACK "
+      mpd.puts 'clearerror'
+      mpd.gets
       [{'error' => line[4..-1]}]
     elsif line =~ /\AOK/
       all
