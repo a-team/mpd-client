@@ -38,14 +38,18 @@ updateStatus = ->
       mpd.currentsong (s) ->
         if s[0]
           $('#progress').slider 'option', 'max', parseInt(s[0]['time'])
-          $('#pl_' + currentSong).removeClass 'currentSong'
+          old = $('#pl_' + currentSong)
+          old.removeClass 'currentSong'
+          old.addClass 'ui-priority-secondary'
           window.currentSong = s[0]['id']
-          $('#pl_' + s[0]['id']).addClass 'currentSong'
+          neu = $('#pl_' + s[0]['id'])
+          neu.addClass 'currentSong'
+          neu.removeClass 'ui-priority-secondary'
           updateStatus()
 
 generateList = (list, songs) ->
   for song in songs
-    element = $('<li id="pl_' + song['id'] + '">' + song['title'] + '</li>')
+    element = $('<li id="pl_' + song['id'] + '" class="ui-state-default ui-priority-secondary">' + song['title'] + '</li>')
     element.data 'song', song
     list.append element
   list
