@@ -38,13 +38,16 @@ updateStatus = ->
       mpd.currentsong (s) ->
         if s[0]
           $('#progress').slider 'option', 'max', parseInt(s[0]['time'])
+          $('#pl_' + currentSong).removeClass 'currentSong'
           window.currentSong = s[0]['id']
+          $('#pl_' + s[0]['id']).addClass 'currentSong'
           updateStatus()
 
-generateList = (songs) ->
-  list = $('<ul></ul>')
+generateList = (list, songs) ->
   for song in songs
-    list.append $('<li>' + song['title'] + '</li>')
+    element = $('<li id="pl_' + song['id'] + '">' + song['title'] + '</li>')
+    element.data 'song', song
+    list.append element
   list
 
 seek = (event) ->
@@ -55,5 +58,10 @@ $ ->
     generate command.command for command in commands
     $("#progress").slider(stop: seek)
     setInterval updateStatus, 1000
-    mpd.playlistinfo (l) -> $('#playlist').html generateList(l).html()
+    mpd.playlistinfo (l) -> generateList $('#playlist'), l
+
+    $('#playlist li').live 'click', ->
+      song = $(this).data 'song'
+      mpd.playid song['id']
+
     updateStatus()
