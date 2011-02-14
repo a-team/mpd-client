@@ -33,8 +33,8 @@ window.currentSong = -1
 updateStatus = ->
   mpd.status (s) ->
     progress = $('#progress')
+    value = parseInt s[0]['time']
     if s[0]['songid'] == currentSong
-      value = parseInt s[0]['time']
       progress.stop true, false
 
       # sometimes, the current time value is less then (old value + 1).
@@ -51,12 +51,10 @@ updateStatus = ->
       else
         return
 
-      console.log value, updateStatus.previous, updateStatus.suspectingPause
-
       progress.css seek: 0
       progress.animate seek: 2,
         {duration: 2000, easing: "linear",
-        step: (d) -> progress.slider 'value', value+d }
+        step: (d)->progress.slider 'value', value+d }
 
     else
       mpd.currentsong (s) ->
@@ -88,7 +86,7 @@ $ ->
 
     # slider. interval should be >1s because the slider looks much
     # smoother when corrections tend to be forward in time.
-    $("#progress").slider(step: .01, stop: seek, slide: (e) -> console.log("Buh!"); $('#progress').stop true, false)
+    $("#progress").slider(animate: 'fast', step: .01, stop: seek, slide: ->$('#progress').stop true, false)
     setInterval updateStatus, 1010
 
     mpd.playlistinfo (l) -> generateList $('#playlist'), l
@@ -97,5 +95,4 @@ $ ->
       song = $(this).data 'song'
       mpd.playid song['id']
 
-    updateStatus()
 
