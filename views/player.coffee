@@ -48,7 +48,7 @@ generateList = (songs) ->
   list
 
 seek = (event) ->
-  mpd.seekid currentSong, $('#progress').slider('option', 'value')
+  mpd.seekid currentSong, Math.floor $('#progress').slider('option', 'value') / 1000
 
 $ ->
   mpd 'commands', (commands) ->
@@ -57,4 +57,5 @@ $ ->
     setInterval updateStatus, 1000
     mpd.playlistinfo (l) -> $('#playlist').html generateList(l).html()
     updateStatus()
+
 
