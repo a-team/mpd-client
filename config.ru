@@ -28,8 +28,12 @@ class App < Sinatra::Base
     slim :player
   end
 
-  get '/player.js' do
-    coffee :player
+  get '/:lib.js' do
+    coffee params[:lib].to_sym
+  end
+
+  get '/:subdir/:lib.js' do
+    coffee ("#{params[:subdir]}/#{params[:lib]}".to_sym)
   end
 
   get '/player.css' do
