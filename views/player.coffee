@@ -33,3 +33,4 @@ seek = (event) ->
 $ ->
   $("#progress").slider(stop: seek)
   setInterval updateProgress, 1000
+  updateProgress()
