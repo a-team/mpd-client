@@ -3,6 +3,7 @@ require 'socket'
 require 'yaml'
 require 'json'
 require 'slim'
+require 'compass'
 
 class App < Sinatra::Base
   enable :session
@@ -10,37 +11,43 @@ class App < Sinatra::Base
   set :mpd, TCPSocket.new(mpd_settings[:host], mpd_settings[:port])
   set :forbidden, %w[idle close kill password]
 
+  Compass.configuration do |c|
+    c.sass_dir = views
+  end
+
+  set :sass, Compass.sass_engine_options
+
   puts mpd.gets
   if mpd_settings[:password]
     mpd.puts "password #{mpd_settings[:password].inspect}"
     puts mpd.gets
   end
 
-  before do
-    content_type :json
-    request.path_info = request.path_info.gsub /\.([^.]+)$/ do |fmt|
-      content_type fmt
-      ''
-    end
-  end
-
   get '/' do
-    content_type :html
     slim :player
   end
 
-  get '/player' do
+  get '/player.js' do
     coffee :player
   end
 
+  get '/player.css' do
+    sass :player
+  end
+
   get '/:cmd' do
-    pass if params[:cmd] == 'favicon'
-    settings.exec params[:cmd]
+    pass if params[:cmd] == 'favicon.ico'
+    exec params[:cmd]
   end
 
   get '/:cmd/*' do
     pass if params[:cmd] == '__sinatra__'
-    settings.exec params[:cmd], params[:splat].first.split('/')
+    exec params[:cmd], params[:splat].first.split('/')
+  end
+
+  def exec(*a)
+    content_type :json
+    settings.exec(*a)
   end
 
   def self.exec(cmd, *args)
