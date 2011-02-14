@@ -33,11 +33,11 @@ window.currentSong = -1
 updateStatus = ->
   mpd.status (s) ->
     if s[0]['songid'] == currentSong
-      $('#progress').slider 'option', 'value', parseInt s[0]['time']
+      $('#progress').slider 'option', 'value', 1000 * parseInt s[0]['time']
     else
       mpd.currentsong (s) ->
         if s[0]
-          $('#progress').slider 'option', 'max', parseInt(s[0]['time'])
+          $('#progress').slider 'option', 'max', 1000 * parseInt(s[0]['time'])
           window.currentSong = s[0]['id']
           updateStatus()
 
@@ -57,3 +57,4 @@ $ ->
     setInterval updateStatus, 1000
     mpd.playlistinfo (l) -> $('#playlist').html generateList(l).html()
     updateStatus()
+
