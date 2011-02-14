@@ -32,12 +32,18 @@ window.currentSong = -1
 
 updateStatus = ->
   mpd.status (s) ->
+    progress = $('#progress')
     if s[0]['songid'] == currentSong
-      $('#progress').slider 'option', 'value', 1000 * parseInt s[0]['time']
+      value = 1000 * parseInt s[0]['time']
+      progress.slider 'option', 'value', value
+      progress.css seek: 0
+      progress.animate seek: 1000, {duration: 1000, easing: "linear", step: (d) -> progress.slider 'value', value+d }
+# var p=$("#progress"), v=p.slider("value"); p.css({seek: 0}).animate({seek: 1000}, {duration: 1000, easing: "linear", step: function(now) { p.slider("value", now + v) }});
+
     else
       mpd.currentsong (s) ->
         if s[0]
-          $('#progress').slider 'option', 'max', 1000 * parseInt(s[0]['time'])
+          progress.slider 'option', 'max', 1000 * parseInt(s[0]['time'])
           window.currentSong = s[0]['id']
           updateStatus()
 
@@ -57,5 +63,6 @@ $ ->
     setInterval updateStatus, 1000
     mpd.playlistinfo (l) -> $('#playlist').html generateList(l).html()
     updateStatus()
+
 
 
