@@ -34,26 +34,34 @@ updateStatus = ->
   mpd.status (s) ->
     progress = $('#progress')
     if s[0]['songid'] == currentSong
-      value = 1000 * parseInt s[0]['time']
-      console.log value
+      value = parseInt s[0]['time']
       progress.stop true, false
-      if updateStatus.previous != value || !updateStatus.suspectingPause
+
+      # sometimes, the current time value is less then (old value + 1).
+      # in this case, for the first such incident, we increment value by
+      # 1 and animate anyway. the second such incident in a row triggers
+      # a pause, in which no animations will occur.
+
+      if updateStatus.previous != value
         updateStatus.previous = value
-        if updateStatus.suspectingPause
-          value++
         updateStatus.suspectingPause = false
-        progress.css seek: 0
-        progress.animate seek: 2000,
-          {duration: 2000, easing: "linear",
-          step: (d) -> progress.slider 'value', value+d }
+      else if !updateStatus.suspectingPause
+        value++
+        updateStatus.suspectingPause = true;
       else
-        updateStatus.suspectingPause = true
-        progress.slider 'value', value
+        return
+
+      console.log value, updateStatus.previous, updateStatus.suspectingPause
+
+      progress.css seek: 0
+      progress.animate seek: 2,
+        {duration: 2000, easing: "linear",
+        step: (d) -> progress.slider 'value', value+d }
 
     else
       mpd.currentsong (s) ->
         if s[0]
-          progress.slider 'option', 'max', 1000 * parseInt(s[0]['time'])
+          progress.slider 'option', 'max', parseInt(s[0]['time'])
           oldValue = $('#pl_' + currentSong)
           oldValue.removeClass 'currentSong'
           oldValue.addClass 'ui-priority-secondary'
@@ -72,15 +80,17 @@ generateList = (list, songs) ->
 
 seek = (event) ->
   $('#progress').stop true, false
-  console.log event
-  mpd.seekid currentSong, Math.floor $('#progress').slider('option', 'value') / 1000
-  updateStatus()
+  mpd.seekid currentSong, Math.floor $('#progress').slider('option', 'value')
 
 $ ->
   mpd 'commands', (commands) ->
     generate command.command for command in commands
-    $("#progress").slider(stop: seek)
-    setInterval updateStatus, 1000
+
+    # slider. interval should be >1s because the slider looks much
+    # smoother when corrections tend to be forward in time.
+    $("#progress").slider(step: .01, stop: seek, slide: (e) -> console.log("Buh!"); $('#progress').stop true, false)
+    setInterval updateStatus, 1010
+
     mpd.playlistinfo (l) -> generateList $('#playlist'), l
 
     $('#playlist li').live 'click', ->
@@ -88,6 +98,4 @@ $ ->
       mpd.playid song['id']
 
     updateStatus()
-
-
 
