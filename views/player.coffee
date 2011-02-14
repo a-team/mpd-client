@@ -22,10 +22,14 @@ updateProgress = ->
       $('#progress').slider 'option', 'value', parseInt s[0]['time']
     else
       mpd.currentsong (s) ->
-        $('#progress').slider 'option', 'max', parseInt(s[0]['time'])
-        window.currentSong = s[0]['id']
-        updateProgress()
+        if s[0]
+          $('#progress').slider 'option', 'max', parseInt(s[0]['time'])
+          window.currentSong = s[0]['id']
+          updateProgress()
+
+seek = (event) ->
+  mpd.seekid currentSong, $('#progress').slider('option', 'value')
 
 $ ->
-  $("#progress").slider()
+  $("#progress").slider(stop: seek)
   setInterval updateProgress, 1000
