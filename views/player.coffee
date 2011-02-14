@@ -11,9 +11,6 @@ generate = (m) ->
   mpd[m] = ->
     mpd m, argsToArray(arguments)...
 
-mpd 'commands', (commands) ->
-  generate command.command for command in commands
-
 window.currentSong = -1
 
 updateProgress = ->
@@ -27,10 +24,19 @@ updateProgress = ->
           window.currentSong = s[0]['id']
           updateProgress()
 
+generateList = (songs) ->
+  list = $('<ul></ul>')
+  for song in songs
+    list.append $('<li>' + song['title'] + '</li>')
+  list
+
 seek = (event) ->
   mpd.seekid currentSong, $('#progress').slider('option', 'value')
 
 $ ->
-  $("#progress").slider(stop: seek)
-  setInterval updateProgress, 1000
-  updateProgress()
+  mpd 'commands', (commands) ->
+    generate command.command for command in commands
+    $("#progress").slider(stop: seek)
+    setInterval updateProgress, 1000
+    mpd.playlistinfo (l) -> $('#playlist').html generateList(l).html()
+    updateProgress()
