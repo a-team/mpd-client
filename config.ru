@@ -6,10 +6,11 @@ require 'slim'
 require 'compass'
 
 class App < Sinatra::Base
-  enable :session
+  enable :session, :static
   set :mpd_settings, YAML.load_file('mpd.yml')
   set :mpd, TCPSocket.new(mpd_settings[:host], mpd_settings[:port])
   set :forbidden, %w[idle close kill password]
+  set :app_file, __FILE__
 
   Compass.configuration do |c|
     c.sass_dir = views
