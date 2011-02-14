@@ -38,19 +38,25 @@ updateStatus = ->
       progress.slider 'option', 'value', value
       progress.css seek: 0
       progress.animate seek: 1000, {duration: 1000, easing: "linear", step: (d) -> progress.slider 'value', value+d }
-# var p=$("#progress"), v=p.slider("value"); p.css({seek: 0}).animate({seek: 1000}, {duration: 1000, easing: "linear", step: function(now) { p.slider("value", now + v) }});
 
     else
       mpd.currentsong (s) ->
         if s[0]
           progress.slider 'option', 'max', 1000 * parseInt(s[0]['time'])
+          old = $('#pl_' + currentSong)
+          old.removeClass 'currentSong'
+          old.addClass 'ui-priority-secondary'
           window.currentSong = s[0]['id']
+          new = $('#pl_' + s[0]['id'])
+          new.addClass 'currentSong'
+          new.removeClass 'ui-priority-secondary'
           updateStatus()
 
-generateList = (songs) ->
-  list = $('<ul></ul>')
+generateList = (list, songs) ->
   for song in songs
-    list.append $('<li>' + song['title'] + '</li>')
+    element = $('<li id="pl_' + song['id'] + '" class="ui-state-default ui-priority-secondary">' + song['title'] + '</li>')
+    element.data 'song', song
+    list.append element
   list
 
 seek = (event) ->
@@ -61,7 +67,12 @@ $ ->
     generate command.command for command in commands
     $("#progress").slider(stop: seek)
     setInterval updateStatus, 1000
-    mpd.playlistinfo (l) -> $('#playlist').html generateList(l).html()
+    mpd.playlistinfo (l) -> generateList $('#playlist'), l
+
+    $('#playlist li').live 'click', ->
+      song = $(this).data 'song'
+      mpd.playid song['id']
+
     updateStatus()
 
 
