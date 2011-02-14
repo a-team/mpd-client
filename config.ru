@@ -75,7 +75,7 @@ class App < Sinatra::Base
         last = {}
         all << last
       end
-      last[key] = value.strip
+      last[key.downcase] = value.strip
       read all, last
     end
   end
