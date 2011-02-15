@@ -71,7 +71,13 @@ updateStatus = ->
 
 generateList = (list, songs) ->
   for song in songs
-    element = $('<li id="pl_' + song['id'] + '" class="ui-state-default ui-priority-secondary">' + song['title'] + '</li>')
+    element = $('<li id="pl_' + song['id'] + '" class="ui-state-default ui-priority-secondary"/>')
+    element.append song['title']
+    meta = $('<p class="metadata"/>')
+    meta.append song['artist']
+    meta.append ' - '
+    meta.append song['album']
+    element.append meta
     element.data 'song', song
     list.append element
   list
