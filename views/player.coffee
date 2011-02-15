@@ -52,9 +52,11 @@ updateStatus = ->
         return
 
       progress.css seek: 0
-      progress.animate seek: 2,
-        {duration: 2000, easing: "linear",
-        step: (d)->progress.slider 'value', value+d }
+      progress.animate seek: 2, {
+        duration: 2000,
+        easing: "linear",
+        step: (d)->progress.slider 'value', value+d
+      }
 
     else
       mpd.currentsong (s) ->
@@ -69,10 +71,20 @@ updateStatus = ->
           newValue.removeClass 'ui-priority-secondary'
           updateStatus()
 
+toTimeString = (seconds) ->
+  result = ""
+  if seconds >= 60
+    result += Math.floor(seconds / 60) + ":"
+  if seconds % 60 < 10
+    result += '0'
+  result += seconds % 60
+  return result
+
 generateList = (list, songs) ->
   for song in songs
     element = $('<li id="pl_' + song['id'] + '" class="song ui-state-default ui-priority-secondary"/>')
     element.append song['title']
+    element.append $('<span class="time">' + toTimeString(song['time']) + '</span>')
     meta = $('<p class="metadata"/>')
     meta.append song['artist']
     meta.append ' - '
