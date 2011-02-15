@@ -71,12 +71,15 @@ updateStatus = ->
 
 generateList = (list, songs) ->
   for song in songs
-    element = $('<li id="pl_' + song['id'] + '" class="ui-state-default ui-priority-secondary"/>')
+    element = $('<li id="pl_' + song['id'] + '" class="song ui-state-default ui-priority-secondary"/>')
     element.append song['title']
     meta = $('<p class="metadata"/>')
     meta.append song['artist']
     meta.append ' - '
     meta.append song['album']
+    color = ((parseInt (song['album'].toLowerCase().replace /[^a-z]/g), 36).toString 16).split('').reverse().join('')
+    color = color.substring(color.length - 6);
+    element.append '<img style="background-color: #'+color+'" />'
     element.append meta
     element.data 'song', song
     list.append element
